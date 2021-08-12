@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Voice Recorder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/css/uikit.min.css"/>
 
@@ -12,21 +13,169 @@
         html,body{
             height:100%;
         }
+
+
+
+
+        .border{
+                border: 1px solid #dedede;
+        }
+
+
+
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body>
 <div class="uk-container uk-container-medium uk-height-expand uk-height-1-1">
     <div class="uk-flex uk-flex-middle uk-flex-center uk-height-1-1">
         <div>
-            <button id="record" class="uk-button uk-button-primary audio uk-border-pill">Record</button>
-            <button id="stop" disabled class="uk-button uk-button-danger audio uk-border-pill">Stop</button>
-            <button id="play" disabled class="uk-button uk-button-default audio uk-border-pill">Play</button>
-            <button id="save" disabled class="uk-button uk-button-secondary audio uk-border-pill">Save</button>
-            <audio class="uk-hidden" id="result" controls>
-                Your browser does not support the audio element.
-            </audio>
+            <div>
+                <h3 class="uk-text-center uk-text-success">Voice Recorder</h3>
+                <h6 class="uk-text-center uk-text-warning uk-margin">Instructions</h6>
+                <hr>
+                <ul class="uk-list uk-list-square">
+                    <li>Press <b>RECORD</b> to start recording.</li>
+                    <li>The browser may ask you for the permission to record.</li>
+                    <li>After you finish recording, press <b>STOP</b>.</li>
+                    <li>If the audio is not clear or if you wish to record it again, you're free to do so.</li>
+                    <li>After finalizing the audio, press <b>SUBMIT</b> button</li>
+                    <li>Upon clicking the submit button, a popup will be displayed to type in the title of the audio.
+                        Your recording will be submitted to the admin for moderation.
+                    </li>
+                    <li>Please keep in mind that the audio you record has to be authentic and genuine. Try not to
+                        record any copyrighted material. Such recordings will be rejected.
+                    </li>
+                </ul>
+            </div>
+            <div class="border uk-padding-small uk-flex uk-flex-around@m uk-flex-left uk-flex-wrap uk-flex-column">
+                <button id="record" class="uk-button uk-button-primary audio uk-border-pill">Record</button>
+                <button id="stop" disabled class="uk-button uk-button-danger audio uk-border-pill">Stop</button>
+                <button id="play" disabled class="uk-button uk-button-default audio uk-border-pill">Play</button>
+                <button id="submit" disabled class="uk-button uk-button-secondary audio uk-border-pill">submit</button>
+            </div>
+            <div class="uk-margin-top uk-text-center">
+                <audio class="uk-hidden" id="result" controls>
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
         </div>
     </div>
 </div>
 </body>
+
+<script>
+      const recordAudio = () =>
+        new Promise(async resolve => {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const mediaRecorder = new MediaRecorder(stream);
+          let audioChunks = [];
+
+          mediaRecorder.addEventListener('dataavailable', event => {
+            audioChunks.push(event.data);
+          });
+
+          const start = () => {
+            audioChunks = [];
+            mediaRecorder.start();
+          };
+
+          const stop = () =>
+            new Promise(resolve => {
+              mediaRecorder.addEventListener('stop', () => {
+                const audioBlob = new Blob(audioChunks);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                const play = () => audio.play();
+                resolve({ audioChunks, audioBlob, audioUrl, play });
+
+                const resultAudio = document.querySelector('#result');
+                resultAudio.src = audioUrl
+                resultAudio.classList.remove('uk-hidden');
+              });
+
+              mediaRecorder.stop();
+            });
+
+          resolve({ start, stop });
+        });
+
+      const sleep = time => new Promise(resolve => setTimeout(resolve, time));
+
+      const recordButton = document.querySelector('#record');
+      const stopButton = document.querySelector('#stop');
+      const playButton = document.querySelector('#play');
+      const submitButton = document.querySelector('#submit');
+      const submitdAudioMessagesContainer = document.querySelector('#submitd-audio-messages');
+
+      let recorder;
+      let audio;
+
+      recordButton.addEventListener('click', async () => {
+        recordButton.setAttribute('disabled', true);
+        stopButton.removeAttribute('disabled');
+        playButton.setAttribute('disabled', true);
+        submitButton.setAttribute('disabled', true);
+        if (!recorder) {
+          recorder = await recordAudio();
+        }
+        recorder.start();
+      });
+
+      stopButton.addEventListener('click', async () => {
+        recordButton.removeAttribute('disabled');
+        stopButton.setAttribute('disabled', true);
+        playButton.removeAttribute('disabled');
+        submitButton.removeAttribute('disabled');
+        audio = await recorder.stop();
+      });
+
+      playButton.addEventListener('click', () => {
+        audio.play();
+      });
+
+      submitButton.addEventListener('click', () => {
+        const reader = new FileReader();
+        reader.readAsDataURL(audio.audioBlob);
+        reader.onload = () => {
+          const base64AudioMessage = reader.result.split(',')[1];
+
+          fetch('/save/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json','X-CSRFToken':"{{csrf_token}}" },
+            body: JSON.stringify({ message: base64AudioMessage })
+          }).then(res => {
+            if (res.status === 201) {
+
+            }
+            console.log('Invalid status saving audio message: ' + res.status);
+          });
+        };
+      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
 </html>
