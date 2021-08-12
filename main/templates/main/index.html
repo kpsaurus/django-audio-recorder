@@ -31,6 +31,9 @@
 
 
 
+
+
+
     </style>
 </head>
 <body>
@@ -58,14 +61,15 @@
             <div class="border uk-padding-small uk-flex uk-flex-around@m uk-flex-left uk-flex-wrap uk-flex-column">
                 <button id="record" class="uk-button uk-button-primary audio uk-border-pill">Record</button>
                 <button id="stop" disabled class="uk-button uk-button-danger audio uk-border-pill">Stop</button>
-                <button id="play" disabled class="uk-button uk-button-default audio uk-border-pill">Play</button>
+                <div class="uk-margin uk-text-center">
+                    <audio class="uk-hiddens" id="result" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                    <p class="uk-text-meta uk-margin-remove-bottom">(Your new record will be available here to play)</p>
+                </div>
                 <button id="submit" disabled class="uk-button uk-button-secondary audio uk-border-pill">submit</button>
             </div>
-            <div class="uk-margin-top uk-text-center">
-                <audio class="uk-hidden" id="result" controls>
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
+
 
         </div>
     </div>
@@ -75,7 +79,9 @@
 <script>
       const recordAudio = () =>
         new Promise(async resolve => {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const stream = await navigator.mediaDevices.getUserMedia(
+            { audio: { sampleSize: 16, channelCount: 1, sampleRate: 24000 } }
+          );
           const mediaRecorder = new MediaRecorder(stream);
           let audioChunks = [];
 
@@ -91,15 +97,13 @@
           const stop = () =>
             new Promise(resolve => {
               mediaRecorder.addEventListener('stop', () => {
-                const audioBlob = new Blob(audioChunks);
+                const audioBlob = new Blob(audioChunks,{ 'type' : 'audio/mp3; codecs=opus' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
-                const play = () => audio.play();
-                resolve({ audioChunks, audioBlob, audioUrl, play });
 
                 const resultAudio = document.querySelector('#result');
                 resultAudio.src = audioUrl
-                resultAudio.classList.remove('uk-hidden');
+                /*resultAudio.classList.remove('uk-hidden');*/
               });
 
               mediaRecorder.stop();
@@ -112,7 +116,6 @@
 
       const recordButton = document.querySelector('#record');
       const stopButton = document.querySelector('#stop');
-      const playButton = document.querySelector('#play');
       const submitButton = document.querySelector('#submit');
       const submitdAudioMessagesContainer = document.querySelector('#submitd-audio-messages');
 
@@ -122,7 +125,6 @@
       recordButton.addEventListener('click', async () => {
         recordButton.setAttribute('disabled', true);
         stopButton.removeAttribute('disabled');
-        playButton.setAttribute('disabled', true);
         submitButton.setAttribute('disabled', true);
         if (!recorder) {
           recorder = await recordAudio();
@@ -133,13 +135,8 @@
       stopButton.addEventListener('click', async () => {
         recordButton.removeAttribute('disabled');
         stopButton.setAttribute('disabled', true);
-        playButton.removeAttribute('disabled');
         submitButton.removeAttribute('disabled');
         audio = await recorder.stop();
-      });
-
-      playButton.addEventListener('click', () => {
-        audio.play();
       });
 
       submitButton.addEventListener('click', () => {
@@ -160,6 +157,9 @@
           });
         };
       });
+
+
+
 
 
 
