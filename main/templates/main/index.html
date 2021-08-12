@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Recorder</title>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/css/uikit.min.css"/>
+
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit-icons.min.js"></script>
+    <style>
+        html,body{
+            height:100%;
+        }
+    </style>
+</head>
+<body>
+<div class="uk-container uk-container-medium uk-height-expand uk-height-1-1">
+    <div class="uk-flex uk-flex-middle uk-flex-center uk-height-1-1">
+        <div>
+            <button id="record" class="uk-button uk-button-primary audio uk-border-pill">Record</button>
+            <button id="stop" disabled class="uk-button uk-button-danger audio uk-border-pill">Stop</button>
+            <button id="play" disabled class="uk-button uk-button-default audio uk-border-pill">Play</button>
+            <button id="save" disabled class="uk-button uk-button-secondary audio uk-border-pill">Save</button>
+            <audio class="uk-hidden" id="result" controls>
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </div>
+</div>
+</body>
+</html>

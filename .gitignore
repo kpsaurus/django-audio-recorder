@@ -1,0 +1,9 @@
+!.gitignore
+.idea/*
+*.DS_Store
+ __pycache__/*
+*.pyc
+env/*
+.env
+static/*
+*.mp3
