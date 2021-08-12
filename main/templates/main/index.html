@@ -100,10 +100,9 @@
                 const audioBlob = new Blob(audioChunks,{ 'type' : 'audio/mp3; codecs=opus' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
-
+                resolve({ audioChunks, audioBlob, audioUrl });
                 const resultAudio = document.querySelector('#result');
                 resultAudio.src = audioUrl
-                /*resultAudio.classList.remove('uk-hidden');*/
               });
 
               mediaRecorder.stop();
