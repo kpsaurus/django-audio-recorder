@@ -138,7 +138,8 @@
         audio = await recorder.stop();
       });
 
-      submitButton.addEventListener('click', () => {
+      submitButton.addEventListener('click', (e) => {
+        submitButton.setAttribute('disabled', true);
         const reader = new FileReader();
         reader.readAsDataURL(audio.audioBlob);
         reader.onload = () => {
@@ -149,9 +150,13 @@
             headers: { 'Content-Type': 'application/json','X-CSRFToken':"{{csrf_token}}" },
             body: JSON.stringify({ message: base64AudioMessage })
           }).then(res => {
-            if (res.status === 201) {
+            UIkit.notification({
+                message: 'Successfully submitted your audio ',
+                status: 'primary',
+                pos: 'bottom-center',
+                timeout: 5000
+            });
 
-            }
             console.log('Invalid status saving audio message: ' + res.status);
           });
         };
