@@ -34,9 +34,14 @@
 
 
 
+
+
+
+
     </style>
 </head>
 <body>
+
 <div class="uk-container uk-container-medium uk-height-expand uk-height-1-1">
     <div class="uk-flex uk-flex-middle uk-flex-center uk-height-1-1">
         <div>
@@ -59,17 +64,22 @@
                 </ul>
             </div>
             <div class="border uk-padding-small uk-flex uk-flex-around@m uk-flex-left uk-flex-wrap uk-flex-column">
-                <button id="record" class="uk-button uk-button-primary audio uk-border-pill">Record</button>
-                <button id="stop" disabled class="uk-button uk-button-danger audio uk-border-pill">Stop</button>
+                <div class="uk-text-center">
+                    <a id="record" style="width:60px;display:inline-block;">
+                        {% include "main/rec-svgrepo-com.svg" %}
+                    </a>
+                    <a class="uk-hidden" id="stop" style="width:60px;display:inline-block;">
+                        {% include "main/stop-svgrepo-com.svg" %}
+                    </a>
+                </div>
                 <div class="uk-margin uk-text-center">
-                    <audio class="uk-hiddens" id="result" controls>
+                    <audio id="result" controls>
                         Your browser does not support the audio element.
                     </audio>
                     <p class="uk-text-meta uk-margin-remove-bottom">(Your new record will be available here to play)</p>
                 </div>
                 <button id="submit" disabled class="uk-button uk-button-secondary audio uk-border-pill">submit</button>
             </div>
-
 
         </div>
     </div>
@@ -122,8 +132,8 @@
       let audio;
 
       recordButton.addEventListener('click', async () => {
-        recordButton.setAttribute('disabled', true);
-        stopButton.removeAttribute('disabled');
+        recordButton.classList.add('uk-hidden');
+        stopButton.classList.remove('uk-hidden');
         submitButton.setAttribute('disabled', true);
         if (!recorder) {
           recorder = await recordAudio();
@@ -132,8 +142,8 @@
       });
 
       stopButton.addEventListener('click', async () => {
-        recordButton.removeAttribute('disabled');
-        stopButton.setAttribute('disabled', true);
+        recordButton.classList.remove('uk-hidden');
+        stopButton.classList.add('uk-hidden');
         submitButton.removeAttribute('disabled');
         audio = await recorder.stop();
       });
@@ -161,6 +171,10 @@
           });
         };
       });
+
+
+
+
 
 
 
