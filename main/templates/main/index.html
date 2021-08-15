@@ -57,6 +57,7 @@
 
 
 
+
     </style>
 </head>
 <body>
@@ -207,7 +208,6 @@
       });
 
       submitButton.addEventListener('click', (e) => {
-        submitButton.setAttribute('disabled', true);
         title.value=''
         intro.value=''
         UIkit.modal(modal).show();
@@ -253,12 +253,14 @@
                     timeout: 5000
                 });
                 UIkit.modal(modal).hide();
-                console.log('Invalid status saving audio message: ' + res.status);
+                submitButton.setAttribute('disabled', true);
+                resultAudio.src='';
               });
             };
 
         }
     }
+
 
 
 
