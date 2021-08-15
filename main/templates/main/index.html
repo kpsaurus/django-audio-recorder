@@ -45,6 +45,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body>
@@ -74,13 +86,14 @@
                 <div>
                     <div class="uk-text-center">
                         <div id="record-wrapper">
-                            <a id="record" style="width:60px;display:inline-block;">
+                            <a id="record" uk-tooltip="Record the audio" style="width:60px;display:inline-block;">
                                 {% include "main/rec-svgrepo-com.svg" %}
                             </a>
                             <p class="uk-text-meta uk-margin-remove-bottom">Press the button to start recording</p>
                         </div>
                         <div id="stop-wrapper" class="uk-hidden">
-                            <a class="uk-hidden" id="stop" style="width:60px;display:inline-block;">
+                            <a class="uk-hidden" uk-tooltip="Stop recording the audio" id="stop"
+                               style="width:60px;display:inline-block;">
                                 {% include "main/stop-svgrepo-com.svg" %}
                             </a>
                             <p class="uk-text-meta uk-margin-remove-bottom">Recording...</p>
@@ -103,9 +116,32 @@
         </div>
     </div>
 </div>
+
+<!-- This is the modal with the default close button -->
+<div id="modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <h2 class="uk-modal-title">Submit for moderation</h2>
+        <input class="uk-input uk-border-pill" placeholder="Enter the title" id="title">
+        <input class="uk-input uk-border-pill uk-margin-small-top" placeholder="Description" id="intro">
+        <div class="uk-text-center uk-margin-top">
+            <button id="confirm-submit" class="uk-button uk-button-primary uk-border-pill">Confirm and submit</button>
+        </div>
+    </div>
+</div>
+
 </body>
 
 <script>
+      const resultAudio = document.querySelector('#result');
+      const recordButton = document.querySelector('#record');
+      const recordWrapper = document.querySelector('#record-wrapper');
+      const stopButton = document.querySelector('#stop');
+      const stopWrapper = document.querySelector('#stop-wrapper');
+      const submitButton = document.querySelector('#submit');
+      const submitConfirmButton = document.querySelector('#confirm-submit');
+      const modal = document.querySelector('#modal');
+
       const recordAudio = () =>
         new Promise(async resolve => {
           const stream = await navigator.mediaDevices.getUserMedia(
@@ -130,7 +166,7 @@
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
                 resolve({ audioChunks, audioBlob, audioUrl });
-                const resultAudio = document.querySelector('#result');
+
                 resultAudio.src = audioUrl
               });
 
@@ -142,11 +178,7 @@
 
       const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
-      const recordButton = document.querySelector('#record');
-      const recordWrapper = document.querySelector('#record-wrapper');
-      const stopButton = document.querySelector('#stop');
-      const stopWrapper = document.querySelector('#stop-wrapper');
-      const submitButton = document.querySelector('#submit');
+
       const submitdAudioMessagesContainer = document.querySelector('#submitd-audio-messages');
 
       let recorder;
@@ -162,6 +194,7 @@
           recorder = await recordAudio();
         }
         recorder.start();
+        resultAudio.src='';
       });
 
       stopButton.addEventListener('click', async () => {
@@ -175,27 +208,60 @@
 
       submitButton.addEventListener('click', (e) => {
         submitButton.setAttribute('disabled', true);
-        const reader = new FileReader();
-        reader.readAsDataURL(audio.audioBlob);
-        reader.onload = () => {
-          const base64AudioMessage = reader.result.split(',')[1];
+        title.value=''
+        intro.value=''
+        UIkit.modal(modal).show();
 
-          fetch('/save/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json','X-CSRFToken':"{{csrf_token}}" },
-            body: JSON.stringify({ message: base64AudioMessage })
-          }).then(res => {
-            UIkit.notification({
-                message: 'Successfully submitted your audio ',
-                status: 'primary',
-                pos: 'bottom-center',
-                timeout: 5000
-            });
-
-            console.log('Invalid status saving audio message: ' + res.status);
-          });
-        };
       });
+
+      submitConfirmButton.addEventListener('click', (e) => {
+
+      submit();
+
+      });
+
+
+    function submit(){
+
+        const reader = new FileReader();
+        const title = document.querySelector('#title').value;
+        const intro = document.querySelector('#intro').value;
+
+        if (!title) {
+            UIkit.notification({
+                    message: 'Please provide a title',
+                    status: 'warning',
+                    pos: 'bottom-center',
+                    timeout: 5000
+                });
+
+        }else{
+
+            reader.readAsDataURL(audio.audioBlob);
+            reader.onload = () => {
+              const base64AudioMessage = reader.result.split(',')[1];
+
+              fetch('/save/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json','X-CSRFToken':"{{csrf_token}}" },
+                body: JSON.stringify({ audio: base64AudioMessage,title:title,intro:intro })
+              }).then(res => {
+                UIkit.notification({
+                    message: 'Successfully submitted your audio ',
+                    status: 'primary',
+                    pos: 'bottom-center',
+                    timeout: 5000
+                });
+                UIkit.modal(modal).hide();
+                console.log('Invalid status saving audio message: ' + res.status);
+              });
+            };
+
+        }
+    }
+
+
+
 
 
 
