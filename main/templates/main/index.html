@@ -42,6 +42,9 @@
 
 
 
+
+
+
     </style>
 </head>
 <body>
@@ -67,30 +70,36 @@
                     </li>
                 </ul>
             </div>
-            <div class="border uk-padding-small uk-flex uk-flex-around@m uk-flex-left uk-flex-wrap uk-flex-column">
-                <div class="uk-text-center">
-                    <div id="record-wrapper">
-                        <a id="record" style="width:60px;display:inline-block;">
-                            {% include "main/rec-svgrepo-com.svg" %}
-                        </a>
-                        <p class="uk-text-meta">Press the button to start recording</p>
-                    </div>
-                    <div id="stop-wrapper" class="uk-hidden">
-                        <a class="uk-hidden" id="stop" style="width:60px;display:inline-block;">
-                            {% include "main/stop-svgrepo-com.svg" %}
-                        </a>
-                        <p class="uk-text-meta">Recording...</p>
+            <div class="border uk-padding-small uk-grid-row-small uk-grid uk-child-width-1-2@m uk-margin-remove">
+                <div>
+                    <div class="uk-text-center">
+                        <div id="record-wrapper">
+                            <a id="record" style="width:60px;display:inline-block;">
+                                {% include "main/rec-svgrepo-com.svg" %}
+                            </a>
+                            <p class="uk-text-meta uk-margin-remove-bottom">Press the button to start recording</p>
+                        </div>
+                        <div id="stop-wrapper" class="uk-hidden">
+                            <a class="uk-hidden" id="stop" style="width:60px;display:inline-block;">
+                                {% include "main/stop-svgrepo-com.svg" %}
+                            </a>
+                            <p class="uk-text-meta uk-margin-remove-bottom">Recording...</p>
+                        </div>
                     </div>
                 </div>
-                <div id="result-wrapper" class="uk-margin uk-text-center uk-animation-scale-up uk-hidden">
-                    <audio id="result" controls>
-                        Your browser does not support the audio element.
-                    </audio>
-                    <p class="uk-text-meta uk-margin-remove-bottom">(Your new record will be available here to play)</p>
+                <div class="uk-grid-margin">
+                    <div id="result-wrapper" class="uk-margin uk-text-center uk-animation-scale-up">
+                        <audio id="result" controls>
+                            Your browser does not support the audio element.
+                        </audio>
+                        <p class="uk-text-meta uk-margin-remove-bottom">(Your new record will be available here to
+                            play)</p>
+                    </div>
                 </div>
+            </div>
+            <div class="uk-margin-top uk-text-center">
                 <button id="submit" disabled class="uk-button uk-button-secondary audio uk-border-pill">submit</button>
             </div>
-
         </div>
     </div>
 </div>
@@ -138,7 +147,6 @@
       const stopButton = document.querySelector('#stop');
       const stopWrapper = document.querySelector('#stop-wrapper');
       const submitButton = document.querySelector('#submit');
-      const resultAudioWrapper = document.querySelector('#result-wrapper');
       const submitdAudioMessagesContainer = document.querySelector('#submitd-audio-messages');
 
       let recorder;
@@ -147,7 +155,6 @@
       recordButton.addEventListener('click', async () => {
         recordButton.classList.add('uk-hidden');
         recordWrapper.classList.add('uk-hidden');
-        resultAudioWrapper.classList.add('uk-hidden');
         stopButton.classList.remove('uk-hidden');
         stopWrapper.classList.remove('uk-hidden');
         submitButton.setAttribute('disabled', true);
@@ -163,7 +170,6 @@
         stopButton.classList.add('uk-hidden');
         stopWrapper.classList.add('uk-hidden');
         submitButton.removeAttribute('disabled');
-        resultAudioWrapper.classList.remove('uk-hidden');
         audio = await recorder.stop();
       });
 
@@ -190,6 +196,9 @@
           });
         };
       });
+
+
+
 
 
 
