@@ -38,6 +38,10 @@
 
 
 
+
+
+
+
     </style>
 </head>
 <body>
@@ -65,14 +69,20 @@
             </div>
             <div class="border uk-padding-small uk-flex uk-flex-around@m uk-flex-left uk-flex-wrap uk-flex-column">
                 <div class="uk-text-center">
-                    <a id="record" style="width:60px;display:inline-block;">
-                        {% include "main/rec-svgrepo-com.svg" %}
-                    </a>
-                    <a class="uk-hidden" id="stop" style="width:60px;display:inline-block;">
-                        {% include "main/stop-svgrepo-com.svg" %}
-                    </a>
+                    <div id="record-wrapper">
+                        <a id="record" style="width:60px;display:inline-block;">
+                            {% include "main/rec-svgrepo-com.svg" %}
+                        </a>
+                        <p class="uk-text-meta">Press the button to start recording</p>
+                    </div>
+                    <div id="stop-wrapper" class="uk-hidden">
+                        <a class="uk-hidden" id="stop" style="width:60px;display:inline-block;">
+                            {% include "main/stop-svgrepo-com.svg" %}
+                        </a>
+                        <p class="uk-text-meta">Recording...</p>
+                    </div>
                 </div>
-                <div class="uk-margin uk-text-center">
+                <div id="result-wrapper" class="uk-margin uk-text-center uk-animation-scale-up uk-hidden">
                     <audio id="result" controls>
                         Your browser does not support the audio element.
                     </audio>
@@ -124,8 +134,11 @@
       const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
       const recordButton = document.querySelector('#record');
+      const recordWrapper = document.querySelector('#record-wrapper');
       const stopButton = document.querySelector('#stop');
+      const stopWrapper = document.querySelector('#stop-wrapper');
       const submitButton = document.querySelector('#submit');
+      const resultAudioWrapper = document.querySelector('#result-wrapper');
       const submitdAudioMessagesContainer = document.querySelector('#submitd-audio-messages');
 
       let recorder;
@@ -133,7 +146,10 @@
 
       recordButton.addEventListener('click', async () => {
         recordButton.classList.add('uk-hidden');
+        recordWrapper.classList.add('uk-hidden');
+        resultAudioWrapper.classList.add('uk-hidden');
         stopButton.classList.remove('uk-hidden');
+        stopWrapper.classList.remove('uk-hidden');
         submitButton.setAttribute('disabled', true);
         if (!recorder) {
           recorder = await recordAudio();
@@ -143,8 +159,11 @@
 
       stopButton.addEventListener('click', async () => {
         recordButton.classList.remove('uk-hidden');
+        recordWrapper.classList.remove('uk-hidden');
         stopButton.classList.add('uk-hidden');
+        stopWrapper.classList.add('uk-hidden');
         submitButton.removeAttribute('disabled');
+        resultAudioWrapper.classList.remove('uk-hidden');
         audio = await recorder.stop();
       });
 
@@ -171,6 +190,10 @@
           });
         };
       });
+
+
+
+
 
 
 
