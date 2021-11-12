@@ -1,8 +1,7 @@
 import base64
 import json
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render
-import uuid
 
 
 # Create your views here.
