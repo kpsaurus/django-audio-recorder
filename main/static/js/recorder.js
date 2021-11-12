@@ -73,7 +73,6 @@ stopButton.addEventListener('click', async () => {
 
 submitButton.addEventListener('click', (e) => {
     title.value=''
-    intro.value=''
     UIkit.modal(modal).show();
 });
 
@@ -86,7 +85,6 @@ function submit(){
 
     const reader = new FileReader();
     const title = document.querySelector('#title').value;
-    const intro = document.querySelector('#intro').value;
 
     if (!title) {
         UIkit.notification({
@@ -105,7 +103,7 @@ function submit(){
           fetch('/save/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json','X-CSRFToken':csrf },
-            body: JSON.stringify({ audio: base64AudioMessage,title:title,intro:intro })
+            body: JSON.stringify({ audio: base64AudioMessage,title:title })
           }).then(res => {
             if (res.status==200){
                 UIkit.notification({
