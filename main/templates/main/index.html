@@ -25,6 +25,7 @@
 
 
 
+
     </style>
 </head>
 <body>
@@ -33,38 +34,31 @@
     <div class="uk-flex uk-flex-middle uk-flex-center uk-height-1-1">
         <div>
             <div>
-                <h3 class="uk-text-center uk-text-success">Voice Recorder</h3>
-                <h6 class="uk-text-center uk-text-warning uk-margin">Instructions</h6>
+                <h3 class="uk-text-center uk-text-primary">VOICE RECORDER</h3>
                 <hr>
                 <ul class="uk-list uk-list-square">
                     <li>Press the record button to start recording.</li>
                     <li>The browser may ask you for the permission to record.</li>
                     <li>After you finish recording, press stop button.</li>
-                    <li>If the audio is not clear or if you wish to record it again, you're free to do so.</li>
                     <li>After finalizing the audio, press <b>SUBMIT</b> button</li>
                     <li>Upon clicking the submit button, a popup will be displayed to type in the title of the audio.
-                        Your recording will be submitted to the admin for moderation.
+                        Your recording will be saved in the project's root directory.
                     </li>
-                    <li>Please keep in mind that the audio you record has to be authentic and genuine. Try not to
-                        record any copyrighted material. Such recordings will be rejected.
-                    </li>
+                    <li class="uk-text-warning">Known issues: Playback issue in Safari browser</li>
                 </ul>
             </div>
             <div class="border uk-padding-small uk-grid-row-small uk-grid uk-child-width-1-2@m uk-margin-remove">
-                <div>
+                <div class="uk-flex uk-flex-center uk-flex-middle">
                     <div class="uk-text-center">
                         <div id="record-wrapper">
-                            <a id="record" uk-tooltip="Record the audio" style="width:60px;display:inline-block;">
-                                {% include "main/rec-svgrepo-com.svg" %}
+                            <a id="record" uk-tooltip="Record the audio" type="button"
+                               class="uk-button uk-button-primary">Record
                             </a>
-                            <p class="uk-text-meta uk-margin-remove-bottom">Press the button to start recording</p>
                         </div>
                         <div id="stop-wrapper" class="uk-hidden">
-                            <a class="uk-hidden" uk-tooltip="Stop recording the audio" id="stop"
-                               style="width:60px;display:inline-block;">
-                                {% include "main/stop-svgrepo-com.svg" %}
+                            <a class="uk-hidden uk-button uk-button-danger" uk-tooltip="Stop recording the audio"
+                               id="stop" type="button">Stop
                             </a>
-                            <p class="uk-text-meta uk-margin-remove-bottom">Recording...</p>
                         </div>
                     </div>
                 </div>
@@ -73,8 +67,6 @@
                         <audio id="result" controls controlsList="nodownload">
                             Your browser does not support the audio element.
                         </audio>
-                        <p class="uk-text-meta uk-margin-remove-bottom">(Your new record will be available here to
-                            play)</p>
                     </div>
                 </div>
             </div>
