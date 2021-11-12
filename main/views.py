@@ -15,9 +15,7 @@ def save_audio(request):
     data = json.loads(data_str)
     audio = data['audio']
     title = data.get('title')
-    intro = data.get('intro')
-    file_name = uuid.uuid4()
-    wav_file = open(f"{file_name}.mp3", "wb")
+    wav_file = open(f"{title}.mp3", "wb")
     decode_string = base64.b64decode(audio)
     wav_file.write(decode_string)
 
